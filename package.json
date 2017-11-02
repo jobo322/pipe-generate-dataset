@@ -1,0 +1,49 @@
+{
+  "name": "pipe-generate-dataset",
+  "version": "0.0.0",
+  "description": "create a dataset by pipe line",
+  "main": "lib/index.js",
+  "module": "src/index.js",
+  "files": [
+    "lib",
+    "src"
+  ],
+  "scripts": {
+    "eslint": "eslint src",
+    "eslint-fix": "npm run eslint -- --fix",
+    "prepublishOnly": "rollup -c",
+    "test": "run-s testonly eslint",
+    "test-travis": "eslint src && jest --coverage && codecov",
+    "testonly": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cheminfo-js/pipe-generate-dataset.git"
+  },
+  "keywords": [],
+  "author": "jobo322",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/cheminfo-js/pipe-generate-dataset/issues"
+  },
+  "homepage": "https://github.com/cheminfo-js/pipe-generate-dataset#readme",
+  "jest": {
+    "testEnvironment": "node"
+  },
+  "devDependencies": {
+    "babel-plugin-transform-es2015-modules-commonjs": "^6.26.0",
+    "codecov": "^3.0.0",
+    "eslint": "^4.10.0",
+    "eslint-config-cheminfo": "^1.8.0",
+    "eslint-plugin-no-only-tests": "^2.0.0",
+    "jest": "^21.2.1",
+    "npm-run-all": "^4.1.1",
+    "rollup": "^0.50.0"
+  },
+  "dependencies": {
+    "nmr-predictor": "^1.1.4",
+    "openchemlib": "^5.3.0",
+    "spectra-data": "^3.1.19",
+    "yargs": "^10.0.3"
+  }
+}
