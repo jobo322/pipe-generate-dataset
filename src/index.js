@@ -16,8 +16,7 @@ var options = {
 };
 
 async function start() {
-    if (argv.fromSDF) {
-        console.log('algo pasa')
+    if (argv.fromSDF && fs.existsSync(argv.fromSDF)) {
         var sdf = fs.readFileSync(argv.fromSDF);
         var parser = new OCL.SDFileParser(sdf.toString());
         var pureElements = [];
@@ -28,12 +27,11 @@ async function start() {
             pureElements.push(simulation.getYData());
         }
     }
-    // console.log(argv)
-    if (argv.jsonConfig) {
+    if (argv.jsonConfig && fs.existsSync(argv.jsonConfig)) {
         let jsonString = fs.readFileSync(argv.jsonConfig);
         var json = JSON.parse(jsonString.toString());
-        console.log(json)
+        console.log(json);
     }
 }
 
-start();
+start().then(() => console.log('end'));
