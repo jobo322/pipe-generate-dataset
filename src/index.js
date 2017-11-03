@@ -1,16 +1,18 @@
 #!/usr/bin/env node
+const generateDataset = require('generate-dataset');
 const argv = require('yargs').argv;
 const fs = require('fs');
 const OCL = require('openchemlib');
 const nmrPredictor = require('nmr-predictor');
 const SD = require('spectra-data');
 
-var options = {
+
+var defaultOptions = {
     frequency: 400,
     from: 1,
     to: 9,
     lineWidth: 1,
-    nbPoints: 256*3,
+    nbPoints: 256 * 3,
     maxClusterSize: 6,
     withNoise: false
 };
@@ -23,15 +25,16 @@ async function start() {
         while(parser.next()) {
             let molecule = parser.getMolecule();
             let prediction = await nmrPredictor.spinus(molecule.toMolfile());
-            let simulation = SD.NMR.fromSignals(prediction, options);
+            let simulation = SD.NMR.fromSignals(prediction, defaultOptions);
             pureElements.push(simulation.getYData());
         }
     }
     if (argv.jsonConfig && fs.existsSync(argv.jsonConfig)) {
         let jsonString = fs.readFileSync(argv.jsonConfig);
         var json = JSON.parse(jsonString.toString());
-        console.log(json);
+        json.pathToWrite = json.pathToWrite ? fs.realpathSync(json.pathToWrite) : fs.realpathSync('./');
     }
+    generateDataset(pureElements, json);
 }
 
 start().then(() => console.log('end'));
