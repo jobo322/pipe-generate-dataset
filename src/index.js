@@ -22,7 +22,7 @@ async function start() {
         var sdf = fs.readFileSync(argv.fromSDF);
         var parser = new OCL.SDFileParser(sdf.toString());
         var pureElements = [];
-        while(parser.next()) {
+        while (parser.next()) {
             let molecule = parser.getMolecule();
             let prediction = await nmrPredictor.spinus(molecule.toMolfile());
             let simulation = SD.NMR.fromSignals(prediction, defaultOptions);
@@ -36,10 +36,16 @@ async function start() {
     }
     if (options && pureElements) {
         let result = generateDataset(pureElements, options);
+        let dataSet = result.dataset;
+        for (let i = 0; i < dataSet.length; i++) {
+            for (let j = 0; j < dataSet[i].length; j++) {
+                dataSet[i][j] += Math.random();
+            }
+        }
         for (let i in result) {
             let matrix = result[i];
             let tmpOutput = '';
-            if (Array.isArray(matrix[0]) {
+            if (Array.isArray(matrix[0])) {
                 for (let j of matrix) {
                     tmpOutput += j.join(', ');
                     tmpOutput += '\n';
