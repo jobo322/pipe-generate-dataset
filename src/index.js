@@ -39,10 +39,15 @@ async function start() {
         for (let i in result) {
             let matrix = result[i];
             let tmpOutput = '';
-            for (let j of matrix) {
-                tmpOutput += j.join(', ');
-                tmpOutput += '\n';
+            if (Array.isArray(matrix[0]) {
+                for (let j of matrix) {
+                    tmpOutput += j.join(', ');
+                    tmpOutput += '\n';
+                }
+            } else {
+                tmpOutput = matrix.join(', ');
             }
+            
             fs.writeFileSync(pathToWrite + '/' + i + '.csv', tmpOutput);
         }
     }
