@@ -31,10 +31,21 @@ async function start() {
     }
     if (argv.jsonConfig && fs.existsSync(argv.jsonConfig)) {
         let jsonString = fs.readFileSync(argv.jsonConfig);
-        var json = JSON.parse(jsonString.toString());
-        json.pathToWrite = json.pathToWrite ? fs.realpathSync(json.pathToWrite) : fs.realpathSync('./');
+        var options = JSON.parse(jsonString.toString());
+        var pathToWrite = options.pathToWrite ? fs.realpathSync(options.pathToWrite) : fs.realpathSync('./');
     }
-    generateDataset(pureElements, json);
+    if (options && pureElements) {
+        let result = generateDataset(pureElements, options);
+        for (let i in result) {
+            let matrix = result[i];
+            let tmpOutput = '';
+            for (let j of matrix) {
+                tmpOutput += j.join(', ');
+                tmpOutput += '\n';
+            }
+            fs.writeFileSync(pathToWrite + '/' + i + '.csv', tmpOutput);
+        }
+    }
 }
 
 start().then(() => console.log('end'));
