@@ -44,6 +44,7 @@
     "generate-dataset": "0.0.1",
     "nmr-predictor": "^1.1.4",
     "openchemlib": "^5.3.0",
+    "sdf-parser": "^2.3.1",
     "spectra-data": "^3.1.19",
     "yargs": "^10.0.3"
   }

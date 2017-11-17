@@ -2,10 +2,9 @@
 const generateDataset = require('generate-dataset');
 const argv = require('yargs').argv;
 const fs = require('fs');
-const OCL = require('openchemlib');
+const sdfParser = require('sdf-parser');
 const nmrPredictor = require('nmr-predictor');
 const SD = require('spectra-data');
-
 
 var defaultOptions = {
     frequency: 400,
@@ -17,40 +16,65 @@ var defaultOptions = {
     withNoise: false
 };
 
-async function start() {
-    if (argv.fromSDF && fs.existsSync(argv.fromSDF)) {
-        var sdf = fs.readFileSync(argv.fromSDF);
-        var parser = new OCL.SDFileParser(sdf.toString());
-        var pureElements = [];
-        while (parser.next()) {
-            let molecule = parser.getMolecule();
-            let prediction = await nmrPredictor.spinus(molecule.toMolfile());
-            let simulation = SD.NMR.fromSignals(prediction, defaultOptions);
-            pureElements.push(simulation.getYData());
+start(argv);
+async function start(argv) {
+    if (argv.fromSDF) {
+        if (fs.existsSync(argv.fromSDF)) {
+            var result = readSDF(argv.fromSDF);
+        } else {
+            new Error('There is not a SDF to read');
         }
     }
-    if (argv.jsonConfig && fs.existsSync(argv.jsonConfig)) {
-        let jsonString = fs.readFileSync(argv.jsonConfig);
-        var options = JSON.parse(jsonString.toString());
-        var pathToWrite = options.pathToWrite ? fs.realpathSync(options.pathToWrite) : fs.realpathSync('./');
+    if (argv.jsonConfig) {
+        var options = null;
+        fs.readFile(argv.jsonConfig, (err, file) => {
+            if (err) throw err;
+            options = checkOptions(file.toString());
+        });
     }
-    if (options && pureElements) {
-        let result = generateDataset(pureElements, options);
-        for (let i in result) {
-            let matrix = result[i];
-            let tmpOutput = '';
-            if (Array.isArray(matrix[0])) {
-                for (let j of matrix) {
-                    tmpOutput += j.join(', ');
-                    tmpOutput += '\n';
-                }
-            } else {
-                tmpOutput = matrix.join(', ');
-            }
+    
+    let pureElements = await Promise.all(result);
+    if (options === null) {
+        waitForVariable(options, 100);
+    }
 
-            fs.writeFile(pathToWrite + '/' + i + '.csv', tmpOutput);
+    let data = generateDataset(pureElements, options);
+    var pathToWrite = options.pathToWrite ? fs.realpathSync(options.pathToWrite) : fs.realpathSync('./');
+    for (let i in data) {
+        let matrix = data[i];
+        let tmpOutput = '';
+        if (Array.isArray(matrix[0])) {
+            for (let j of matrix) {
+                tmpOutput += j.join(', ');
+                tmpOutput += '\n';
+            }
+        } else {
+            tmpOutput = matrix.join(', ');
         }
+
+        fs.writeFile(pathToWrite + '/' + i + '.csv', tmpOutput, (err) => {
+            if (err) throw err;
+        });
     }
 }
 
-start().then(() => console.log('end'));
+function readSDF(path) {
+    var file = fs.readFileSync(path);
+    var result = sdfParser(file.toString());
+    return result.molecules.map((molecule) => {
+        return nmrPredictor.spinus(molecule.molfile, {group: true}).then((prediction) => {
+            return SD.NMR.fromSignals(prediction, defaultOptions).getYData();
+        });
+    });
+}
+
+function checkOptions(options) {
+    options = JSON.parse(options);
+    return options;
+}
+
+function waitForVariable(waited, time) {
+    if (!waited) {
+        setTimeout(waitForVariable(waited), time);
+    }
+}
