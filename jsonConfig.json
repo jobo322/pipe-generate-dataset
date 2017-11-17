@@ -1,9 +1,6 @@
 {
-    "keepDataClass": true,
-    "keepCompositionMatrix": false,
-    "dummyMatrix": true,
-    "exportAsCsv": true,
     "seed": 22,
+    "noiseFactor": 0.5,
     "classes": [
         {
             "nbSample": 500,

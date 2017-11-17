@@ -36,12 +36,6 @@ async function start() {
     }
     if (options && pureElements) {
         let result = generateDataset(pureElements, options);
-        let dataSet = result.dataset;
-        for (let i = 0; i < dataSet.length; i++) {
-            for (let j = 0; j < dataSet[i].length; j++) {
-                dataSet[i][j] += Math.random();
-            }
-        }
         for (let i in result) {
             let matrix = result[i];
             let tmpOutput = '';
@@ -53,8 +47,8 @@ async function start() {
             } else {
                 tmpOutput = matrix.join(', ');
             }
-            
-            fs.writeFileSync(pathToWrite + '/' + i + '.csv', tmpOutput);
+
+            fs.writeFile(pathToWrite + '/' + i + '.csv', tmpOutput);
         }
     }
 }
