@@ -1,0 +1,87 @@
+{
+    "seed": 22,
+    "noiseFactor": 0.5,
+    "meanComposition": [10, 15],
+    "defaultBehavior": {
+        "distribution": {
+			"name": ["normal", "normal"],
+			"parameters": {
+				"standardDeviation": [0.1, 0.1],
+				"meanType": ["sd/diff/absolute","sd/diff/absolute"],
+				"mean": [0, -0.1]
+			}	
+		}
+    },
+    "classes": [
+        {
+            "nbSample": 500,
+            "elements": [
+                {
+                    "index": 0,
+                    "distribution": {
+                        "name": "normal",
+                        "parameters": {
+                            "mean": 9.4,
+                            "standardDeviation": 0.1
+                        }
+                    }
+                },
+                {
+                    "index": 1,
+                    "distribution": {
+                        "name": "normal",
+                        "parameters": {
+                            "mean": 9.4,
+                            "standardDeviation": 0.1
+                        }
+                    }
+                },
+                {
+                    "index": 2,
+                    "distribution": {
+                        "name": "normal",
+                        "parameters": {
+                            "mean": 9.4,
+                            "standardDeviation": 0.1
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "nbSample": 500,
+            "elements": [
+                {
+                    "index": 0,
+                    "distribution": {
+                        "name": "normal",
+                        "parameters": {
+                            "mean": 9.4,
+                            "standardDeviation": 0.1
+                        }
+                    }
+                },
+                {
+                    "index": 1,
+                    "distribution": {
+                        "name": "normal",
+                        "parameters": {
+                            "mean": 10.3,
+                            "standardDeviation": 0.15
+                        }
+                    }
+                },
+                {
+                    "index": 2,
+                    "distribution": {
+                        "name": "normal",
+                        "parameters": {
+                            "mean": 9.4,
+                            "standardDeviation": 0.1
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}
