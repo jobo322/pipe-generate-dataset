@@ -13,30 +13,28 @@ var defaultOptions = {
     lineWidth: 1,
     nbPoints: 256 * 3,
     maxClusterSize: 6,
-    withNoise: false
 };
 
 start(argv);
 async function start(argv) {
+    if (argv.jsonConfig) {
+        var file = fs.readFileSync(argv.jsonConfig);
+        var options = JSON.parse(file.toString());
+    } else {
+        new ErrorEvent('Should has a jsonConfig file');
+    }
+    
     if (argv.fromSDF) {
         if (fs.existsSync(argv.fromSDF)) {
-            var result = readSDF(argv.fromSDF);
+            var result = readSDF(argv.fromSDF, options);
         } else {
             new Error('There is not a SDF to read');
         }
     }
-    if (argv.jsonConfig) {
-        var options = null;
-        fs.readFile(argv.jsonConfig, (err, file) => {
-            if (err) throw err;
-            options = checkOptions(file.toString());
-        });
-    }
-    
+
+    options = checkOptions(options, 6);//result.length);
+    console.log(options.classes[0].elements.length)
     let pureElements = await Promise.all(result);
-    if (options === null) {
-        waitForVariable(options, 100);
-    }
 
     let data = generateDataset(pureElements, options);
     var pathToWrite = options.pathToWrite ? fs.realpathSync(options.pathToWrite) : fs.realpathSync('./');
@@ -58,21 +56,54 @@ async function start(argv) {
     }
 }
 
-function readSDF(path) {
+function readSDF(path, options) {
     var file = fs.readFileSync(path);
     var result = sdfParser(file.toString());
     return result.molecules.map((molecule) => {
-        return nmrPredictor.spinus(molecule.molfile, {group: true}).then((prediction) => {
-            return SD.NMR.fromSignals(prediction, defaultOptions).getYData();
+        return nmrPredictor.spinus(molecule.molfile.value, {group: true}).then((prediction) => {
+            return SD.NMR.fromSignals(prediction, options).getYData();
         });
     });
 }
 
-function checkOptions(options) {
-    options = JSON.parse(options);
+function checkOptions(options, nbPureElements) {
+    options = Object.assign({}, options, defaultOptions);
+    if (options.defaultBehavior) {
+        let classes = options.classes;
+        
+        let {name, parameters} = options.defaultBehavior.distribution;
+        let {mean, meanType, standardDeviation} = parameters;
+        for (let i = 0; i < classes.length; i++) {
+            if (classes[i].elements.length < nbPureElements) {
+                let newElements = new Array(nbPureElements).fill(0);
+                for (let e of classes[i].elements) {
+                    newElements[e.index] = e;
+                }
+                for (let j = 0; j < nbPureElements; j++) {                    
+                    if (newElements[j] === 0) {
+                        let newMean = getMean(options.meanComposition[i], mean[i], standardDeviation[i], meanType[i]);
+                        newElements[j] = {
+                            index: i,
+                            distribution: {
+                                name: name[i],
+                                parameters: {
+                                    mean: newMean,
+                                    standardDesviation: standardDeviation[i]
+                                }
+                            }
+                        }
+                    }
+                }
+                classes[i].elements = newElements;
+            }
+        }
+    }
     return options;
 }
 
+function getMean(meanComposition, mean, std, meanType) {
+    return mean;
+}
 function waitForVariable(waited, time) {
     if (!waited) {
         setTimeout(waitForVariable(waited), time);
