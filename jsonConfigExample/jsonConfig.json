@@ -1,6 +1,8 @@
 {
     "seed": 22,
     "noiseFactor": 0.5,
+    "pathToWrite": "./",
+    "predictionOptions": {},
     "classes": [
         {
             "nbSample": 500,

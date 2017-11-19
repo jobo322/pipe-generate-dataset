@@ -2,6 +2,8 @@
     "seed": 22,
     "noiseFactor": 0.5,
     "meanComposition": [10, 15],
+    "pathToWrite": "../",
+    "predictionOptions": {},
     "defaultBehavior": {
         "distribution": {
 			"name": ["normal", "normal"],
