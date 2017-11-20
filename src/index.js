@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 const fs = require('fs');
 const argv = require('yargs').argv;
-const generateDataset = require('generate-dataset');
+const generateDataset = require('ml-generate-dataset');
 const {fromSDF} = require('./createPureElements/createElements');
 const checkOptions = require('./checkOptions');
 
@@ -13,14 +13,13 @@ var defaultOptions = {
     nbPoints: 256 * 3,
     maxClusterSize: 6,
 };
-
 start(argv);
 async function start(argv) {
     if (argv.jsonConfig) {
         var file = fs.readFileSync(argv.jsonConfig);
         var options = JSON.parse(file.toString());
     } else {
-        new ErrorEvent('Should has a jsonConfig file');
+        throw new TypeError('Should has a jsonConfig file');
     }
 
     let {
@@ -28,18 +27,19 @@ async function start(argv) {
         predictionOptions = {},
         keepPureElements = false
     } = options;
-    
+
     if (argv.fromSDF) {
         if (fs.existsSync(argv.fromSDF)) {
             predictionOptions = Object.assign({}, defaultOptions, predictionOptions);
             var result = fromSDF(argv.fromSDF, predictionOptions);
         } else {
-            new Error('There is not a SDF to read');
+            throw new Error('There is not a SDF to read');
         }
     }
 
     options = checkOptions(options, result.length);
     let pureElements = await Promise.all(result);
+
     let data = generateDataset(pureElements, options);
 
     if (keepPureElements) {
@@ -47,9 +47,10 @@ async function start(argv) {
     }
 
     if (pathToWrite) {
+        let outputPrefix = argv.outputPrefix || '';
         for (let key in data) {
             let path = fs.realpathSync(pathToWrite);
-            writeOutput(data[key], path + '/' + key + '.csv');
+            writeOutput(data[key], path + '/' + outputPrefix + '_' + key + '.csv');
         }
     }
     return data;
