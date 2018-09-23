@@ -1,8 +1,9 @@
 #!/usr/bin/env node
-const generateDataset = require('generate-dataset');
+const generateDataset = require('ml-generate-dataset');
 const argv = require('yargs').argv;
 const fs = require('fs');
 const OCL = require('openchemlib');
+const path = require('path')
 const nmrPredictor = require('nmr-predictor');
 const SD = require('spectra-data');
 
@@ -48,7 +49,12 @@ async function start() {
                 tmpOutput = matrix.join(', ');
             }
 
-            fs.writeFile(pathToWrite + '/' + i + '.csv', tmpOutput);
+            let currentPath = path.format({dir: pathToWrite, base: i + '.csv'});
+            fs.writeFile(currentPath, tmpOutput, (err) => {
+                if (err) throw err;
+                console.log('The file has been saved!');
+              }
+            );
         }
     }
 }
