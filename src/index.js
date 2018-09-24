@@ -37,6 +37,7 @@ async function start() {
     }
     if (options && pureElements) {
         let result = generateDataset(pureElements, options);
+        result.pureElements = pureElements;
         for (let i in result) {
             let matrix = result[i];
             let tmpOutput = '';
