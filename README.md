@@ -1,36 +1,27 @@
 # pipe-generate-dataset
 
-  [![NPM version][npm-image]][npm-url]
-  [![build status][travis-image]][travis-url]
-  [![Test coverage][codecov-image]][codecov-url]
-  [![npm download][download-image]][download-url]
+With this library you can create a database of nmr 1D predicted spectra from a sdf file. You allow to create severals classes with some selected biomarker, mean and deviation for each class. In jsonConfig.json file you can find an example of the configuration file. If you have the pure elements to make the dataset, you can use a more general package like https//github.com/mljs/generate-dataset
 
-create a dataset by pipe line.
+the library return 5 file with database and some util information:
+
+classMatrix.csv -> classes at the matrix binary format e.g. [[0,1,0],[1,0,0],[0,1,0]]
+classVector.csv -> classes at array format e.g. [1,1,2,1,2]
+compositionMatrix.csv -> matrix with the percentaje of each pureElement in each mixture spectrum.
+pureElement.csv -> spectra used for make up the dataset.
+dataset.csv -> matrix dataset.
 
 ## Installation
 
-`$ npm install --save pipe-generate-dataset`
+`$ git clone https://github.com/jobo322/pipe-generate-dataset`
 
 ## Usage
 
 ```js
-import library from 'pipe-generate-dataset';
-
-const result = library(args);
-// result is ...
+node src/index.js --jsonConfig jsonConfig.json --fromSDF set.sdf
+//the result is ... 5 writed file into pathToWrite if it is defined in jsonConfig otherwise in ./ 
 ```
-
-## [API Documentation](https://cheminfo-js.github.io/pipe-generate-dataset/)
 
 ## License
 
   [MIT](./LICENSE)
 
-[npm-image]: https://img.shields.io/npm/v/pipe-generate-dataset.svg?style=flat-square
-[npm-url]: https://www.npmjs.com/package/pipe-generate-dataset
-[travis-image]: https://img.shields.io/travis/cheminfo-js/pipe-generate-dataset/master.svg?style=flat-square
-[travis-url]: https://travis-ci.org/cheminfo-js/pipe-generate-dataset
-[codecov-image]: https://img.shields.io/codecov/c/github/cheminfo-js/pipe-generate-dataset.svg?style=flat-square
-[codecov-url]: https://codecov.io/gh/cheminfo-js/pipe-generate-dataset
-[download-image]: https://img.shields.io/npm/dm/pipe-generate-dataset.svg?style=flat-square
-[download-url]: https://www.npmjs.com/package/pipe-generate-dataset

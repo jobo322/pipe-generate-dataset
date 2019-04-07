@@ -1,6 +1,7 @@
 {
     "seed": 22,
     "noiseFactor": 0.5,
+    "nbPoints": 1024,
     "classes": [
         {
             "nbSample": 500,
